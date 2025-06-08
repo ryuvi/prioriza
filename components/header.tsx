@@ -2,7 +2,8 @@ import React from "react";
 import { Appbar, Text, useTheme, ProgressBar } from "react-native-paper";
 import { View, StyleSheet } from "react-native";
 import { BlurView } from "expo-blur";
-import { useScoreStore } from "@/stores/useScore";
+import { useScoreStore } from "@/stores/useScoreStore";
+import { useStreakStore } from "@/stores/useStreakStore";
 
 const BASE_POINTS = 100;
 const GROWTH_RATE = 1.5;
@@ -27,39 +28,38 @@ function getLevelData(score: number) {
   };
 }
 
-export default function Header() {
+export default function Header({ title }: { title: string }) {
   const { colors } = useTheme();
   const { score } = useScoreStore();
   const { level, progressToNext, nextLevelThreshold, percentToNext } = getLevelData(score);
+  const { streak } = useStreakStore();
 
   return (
     <View style={styles.container}>
       <BlurView tint="dark" intensity={50} style={StyleSheet.absoluteFill} />
-      <Appbar.Header
-        style={[
-          styles.header,
-          {
-            backgroundColor: `${colors.primaryContainer}cc`,
-          },
-        ]}
-      >
-        <Appbar.Content
-          title="Tarefas"
-          titleStyle={{ color: colors.onPrimaryContainer }}
-        />
-        <View style={styles.scoreContainer}>
-          <Text style={[styles.scoreText, { color: colors.onPrimaryContainer }]}>
-            Nível: {level}
-          </Text>
-          <Text style={[styles.pointsText, { color: colors.onPrimaryContainer }]}>
+      <Appbar.Header style={[styles.header, { backgroundColor: `${colors.primaryContainer}cc` }]}>
+        {/* Streak */}
+        <View style={styles.infoBlock}>
+          <Text style={[styles.label, { color: colors.onPrimaryContainer }]}>Streak 🔥</Text>
+          <Text style={[styles.value, { color: colors.onPrimaryContainer }]}>{streak} dias</Text>
+        </View>
+
+        {/* Título */}
+        <View style={styles.titleBlock}>
+          <Text style={[styles.title, { color: colors.onPrimaryContainer }]}>{title}</Text>
+        </View>
+
+        {/* Level / XP */}
+        <View style={styles.infoBlockRight}>
+          <Text style={[styles.label, { color: colors.onPrimaryContainer }]}>Nível {level}</Text>
+          <Text style={[styles.valueSmall, { color: colors.onPrimaryContainer }]}>
             {progressToNext}/{nextLevelThreshold} XP
           </Text>
           <ProgressBar
             animatedValue={percentToNext}
             color={colors.primary}
             style={styles.progress}
-            fillStyle={{ backgroundColor: colors.primary }}
-            visible={true}
+            visible
           />
         </View>
       </Appbar.Header>
@@ -73,26 +73,42 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   header: {
-    backgroundColor: "transparent",
     elevation: 0,
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 12,
   },
-  scoreContainer: {
+  infoBlock: {
+    alignItems: "flex-start",
+  },
+  infoBlockRight: {
     alignItems: "flex-end",
-    justifyContent: "center",
-    minWidth: 120,
   },
-  scoreText: {
-    fontWeight: "bold",
+  titleBlock: {
+    flex: 1,
+    alignItems: "center",
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: "700",
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  value: {
     fontSize: 16,
+    fontWeight: "500",
   },
-  pointsText: {
+  valueSmall: {
     fontSize: 12,
+    fontWeight: "400",
     marginBottom: 4,
   },
   progress: {
     height: 6,
+    width: 60,
     borderRadius: 3,
-    width: 50,
-    backgroundColor: 'grey'
+    backgroundColor: "#cccccc80",
   },
 });

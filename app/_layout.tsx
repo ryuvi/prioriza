@@ -1,5 +1,5 @@
 import Header from '@/components/header';
-import { Stack } from 'expo-router';
+import { Slot, Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { ThemeProvider } from '@/src/themeProvider';
@@ -25,7 +25,7 @@ export default function Layout() {
     <SafeAreaProvider>
     <ThemeProvider>
       <Stack>
-        <Stack.Screen name="index" options={{ header: () => <Header />  }} />
+        <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
       </Stack>
     </ThemeProvider>
     </SafeAreaProvider>

@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Animated, FlatList, KeyboardAvoidingView, Platform, SafeAreaView, Text, View } from "react-native";
 import { Portal, useTheme } from "react-native-paper";
 import { useTaskStore, Task } from "@/stores/useTaskStore";
@@ -7,6 +7,9 @@ import TaskModal from "@/components/taskModal";
 import TaskFAB from "@/components/taskFAB";
 import ModalSettings from "@/components/taskSettings";
 import { AnimatedTaskCard } from "@/components/animatedTaskCard";
+import { useScoreStore } from "@/stores/useScoreStore";
+import { useAchievementsStore } from "@/stores/useAchievementsStore";
+import { useAchievementSnackbar } from "@/components/AchievementSnackbar";
 
 // Tipando o componente de lista animada
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList<Task>);
@@ -14,12 +17,20 @@ const AnimatedFlatList = Animated.createAnimatedComponent(FlatList<Task>);
 export default function Index() {
   const { tasks, removeTask, toggleTask } = useTaskStore();
   const { colors } = useTheme();
+  const { score, level } = useScoreStore()
+  const { checkAchievements } = useAchievementsStore()
+  const { SnackbarComponent, showAchievement } = useAchievementSnackbar();
 
   const sortedTasks = useMemo(() => {
     return [...tasks].sort(
       (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
   }, [tasks]);
+
+  useEffect(() => {
+    checkAchievements({score, level, tasksCompleted: 1, dayStreak: 1}, showAchievement);
+
+  }, [score,level])
 
   return (
     <Portal.Host>
@@ -49,6 +60,7 @@ export default function Index() {
         <ModalSettings />
         <TaskModal />
         <TaskFAB />
+        <SnackbarComponent />
       </SafeAreaView>
     </Portal.Host>
   );

@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { achievementsList } from "@constants/achievementsList";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { achievementsList } from "@constants/achievementsList";
 
 type ConditionType = "score" | "level" | "tasksCompleted" | "dayStreak";
 
@@ -20,36 +20,50 @@ export interface Achievement {
 
 interface AchievementsState {
   achievements: Achievement[];
-  checkAchievements: (userData: {
-    score: number;
-    level: number;
-    tasksCompleted: number;
-    dayStreak: number;
-  }) => void;
+  checkAchievements: (
+    userData: {
+      score: number;
+      level: number;
+      tasksCompleted: number;
+      dayStreak: number;
+    },
+    onUnlock?: (achievement: Achievement) => void
+  ) => void;
 }
 
 export const useAchievementsStore = create<AchievementsState>()(
   persist(
     (set, get) => ({
       achievements: achievementsList,
-      checkAchievements: ({ score, level, tasksCompleted, dayStreak }) => {
+
+      checkAchievements: (userData, onUnlock) => {
         const { achievements } = get();
+        const newlyCompleted: Achievement[] = [];
 
         const updated = achievements.map((a) => {
           if (a.completed) return a;
 
-          const { type, value } = a.condition;
-
           const passed =
-            (type === "score" && score >= value) ||
-            (type === "level" && level >= value) ||
-            (type === "tasksCompleted" && tasksCompleted >= value) ||
-            (type === "dayStreak" && dayStreak >= value);
+            (a.condition.type === "score" && userData.score >= a.condition.value) ||
+            (a.condition.type === "level" && userData.level >= a.condition.value) ||
+            (a.condition.type === "tasksCompleted" && userData.tasksCompleted >= a.condition.value) ||
+            (a.condition.type === "dayStreak" && userData.dayStreak >= a.condition.value);
 
-          return { ...a, completed: passed };
+          if (passed) {
+            const completedAchievement = { ...a, completed: true };
+            newlyCompleted.push(completedAchievement);
+            return completedAchievement;
+          }
+
+          return a;
         });
 
         set({ achievements: updated });
+
+        // Trigger callback for each unlocked achievement
+        if (onUnlock && newlyCompleted.length > 0) {
+          newlyCompleted.forEach(onUnlock);
+        }
       },
     }),
     {

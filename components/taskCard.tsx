@@ -10,8 +10,9 @@ import {
 } from "react-native-paper";
 import { Task } from "@/stores/useTaskStore";
 import { useModalStore } from "@/stores/useModalStore";
-import { useScoreStore } from "@/stores/useScore";
+import { useScoreStore } from "@/stores/useScoreStore";
 import XPFloat from "./taskXPFloat";
+import { useStreakStore } from "@/stores/useStreakStore";
 
 interface TaskCardProps {
   task: Task;
@@ -26,25 +27,27 @@ export const TaskCard: React.FC<TaskCardProps> = ({
 }) => {
   const { showModal, setEditableTask } = useModalStore();
   const { addScore } = useScoreStore();
+  const { registerActivity } = useStreakStore();
   const { colors } = useTheme();
 
   const [showXP, setShowXP] = useState(false);
 
   let taskColors = "#4CAF50";
   let taskPriority = "Baixa";
-  let taskScore = 1;
+  let taskScore = 10;
 
   if ((task.priority ?? 1) === 2) {
     taskColors = "#FFC107";
-    taskPriority = "Normal";
-    taskScore = 2;
+    taskPriority = "Media";
+    taskScore = 20;
   } else if ((task.priority ?? 1) === 3) {
     taskColors = "#F44336";
     taskPriority = "Alta";
-    taskScore = 3;
+    taskScore = 30;
   }
 
   const handleComplete = () => {
+    registerActivity()
     onToggle(task.id);
     addScore(taskScore);
     setShowXP(true);
@@ -101,7 +104,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
               <IconButton
                 icon="delete"
                 iconColor={colors.error}
-                onPress={() => onDelete(task.id)}
+                onPress={() => {onDelete(task.id);registerActivity()}}
               />
             </View>
           )}

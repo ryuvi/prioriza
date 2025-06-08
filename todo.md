@@ -1,11 +1,16 @@
+# v1.3.0: Unlockables
+
+- Profile page
+- Task history
+- Unlockables
+
 # v1.2.0: Gaming Improved
 
 - Achievements
 - Visual Streaks (Duolingo)
 - Calendar Monitoring
-- Unlockables
 
-# v1.1.0: Some features
+# v1.1.0: Score features
 
 - Tags
 - Level

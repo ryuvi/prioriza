@@ -1,4 +1,5 @@
 import { useModalStore } from "@/stores/useModalStore";
+import { useStreakStore } from "@/stores/useStreakStore";
 import { useTaskStore } from "@/stores/useTaskStore";
 import React, { useState, useEffect } from "react";
 import { KeyboardAvoidingView, View } from "react-native";
@@ -16,6 +17,7 @@ const TaskModal = () => {
   const { visible, hideModal, editableTask } = useModalStore();
   const { colors } = useTheme();
   const { addTask, updateTask } = useTaskStore();
+  const { registerActivity } = useStreakStore(); 
 
   const [task, setTask] = useState({
     name: "",
@@ -50,6 +52,7 @@ const TaskModal = () => {
 
   const handleSave = () => {
     if (!task.name.trim()) return;
+    registerActivity();
     addTask(
       task.name.trim(),
       task.description.trim(),
@@ -63,6 +66,7 @@ const TaskModal = () => {
   const handleUpdate = () => {
     if (!editableTask) return;
     if (!task.name.trim()) return;
+    registerActivity();
     updateTask({ ...editableTask, ...task });
     hideModal();
   };
@@ -110,7 +114,7 @@ const TaskModal = () => {
           onChange={(item) => setTask((old) => ({ ...old, priority: item.value }))}
           data={[
             { label: "Baixa", value: 1 },
-            { label: "Normal", value: 2 },
+            { label: "Media", value: 2 },
             { label: "Alta", value: 3 },
           ]}
           style={{

@@ -41,8 +41,8 @@ export default function TaskFAB() {
         onStateChange={({ open }) => setOpen(open)}
         style={{
           position: "absolute",
-          right: 16,
-          bottom: 16,
+          right: 8,
+          bottom: 0,
           elevation: 6,
         }}
         fabStyle={{
