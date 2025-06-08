@@ -1,11 +1,12 @@
 import React, { useMemo } from "react";
-import { Animated, FlatList, SafeAreaView, Text, View } from "react-native";
+import { Animated, FlatList, KeyboardAvoidingView, Platform, SafeAreaView, Text, View } from "react-native";
 import { Portal, useTheme } from "react-native-paper";
 import { useTaskStore, Task } from "@/stores/useTaskStore";
 import { TaskCard } from "@/components/taskCard";
 import TaskModal from "@/components/taskModal";
 import TaskFAB from "@/components/taskFAB";
 import ModalSettings from "@/components/taskSettings";
+import { AnimatedTaskCard } from "@/components/animatedTaskCard";
 
 // Tipando o componente de lista animada
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList<Task>);
@@ -31,8 +32,8 @@ export default function Index() {
             padding: 12,
             paddingBottom: 96, // espaço para o FAB
           }}
-          renderItem={({ item }) => (
-            <TaskCard task={item} onToggle={toggleTask} onDelete={removeTask} />
+          renderItem={({ item, index }) => (
+            <AnimatedTaskCard task={item} onToggle={toggleTask} onDelete={removeTask} index={index} />
           )}
           ListEmptyComponent={
             <View style={{ paddingTop: 32, alignItems: "center" }}>
@@ -41,6 +42,9 @@ export default function Index() {
               </Text>
             </View>
           }
+          initialNumToRender={6}
+          maxToRenderPerBatch={10}
+          removeClippedSubviews={true}
         />
         <ModalSettings />
         <TaskModal />

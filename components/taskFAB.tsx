@@ -49,6 +49,7 @@ export default function TaskFAB() {
           backgroundColor: colors.primary,
           elevation: 8,
         }}
+        color={colors.onPrimary}
         visible
       />
     </Portal>

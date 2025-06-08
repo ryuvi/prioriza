@@ -1,5 +1,5 @@
 import { useSettingsStore } from "@/stores/useSettingsStore";
-import { useTheme as customerTheme, ThemeKey } from "@/src/themeProvider";
+import { useTheme as customTheme, ThemeKey } from "@/src/themeProvider";
 import React, { useState, useEffect } from "react";
 import { Button, Modal, Portal, Text, useTheme } from "react-native-paper";
 import { Dropdown } from "react-native-element-dropdown";
@@ -8,7 +8,7 @@ import { View } from "react-native";
 const ModalSettings = () => {
   const { settingsVisible, hideSettings } = useSettingsStore();
   const { colors } = useTheme();
-  const { themeKey, setThemeKey } = customerTheme();
+  const { themeKey, setThemeKey } = customTheme();
 
   const [selectedTheme, setSelectedTheme] = useState<ThemeKey>(themeKey);
 
@@ -61,7 +61,7 @@ const ModalSettings = () => {
           data={availableThemes}
           labelField="label"
           valueField="value"
-          value={selectedTheme}
+          value={selectedTheme as string}
           onChange={(item) => setSelectedTheme(item.value as ThemeKey)}
           style={{
             backgroundColor: colors.surfaceVariant,
@@ -75,8 +75,8 @@ const ModalSettings = () => {
             backgroundColor: colors.surfaceVariant,
             borderRadius: 8,
           }}
-          itemTextStyle={{ color: colors.onSurfaceVariant }}
-          activeColor={colors.secondary}
+          itemTextStyle={{ color: colors.onPrimaryContainer }}
+          activeColor={colors.primaryContainer}
           placeholder="Escolha um tema"
           placeholderStyle={{ color: colors.onSurfaceVariant }}
         />

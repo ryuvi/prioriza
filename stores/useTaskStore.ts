@@ -10,11 +10,13 @@ export interface Task {
   priority?: number;
   completed: boolean;
   createdAt: Date;
+  dueDate?: string;
+  category?: string;
 }
 
 export interface TaskState {
   tasks: Task[];
-  addTask: (name: string, description?: string, priority?: number) => void;
+  addTask: (name: string, description?: string, priority?: number, dueDate?: string, category?: string) => void;
   toggleTask: (id: string) => void;
   removeTask: (id: string) => void;
   updateTask: (task: Task) => void;
@@ -31,8 +33,10 @@ export const useTaskStore = create<TaskState>()(
         priority: 1,
         completed: false,
         createdAt: new Date(),
+        dueDate: new Date().toLocaleDateString('pt-Br'),
+        category: 'Category 1',
       }],
-      addTask: (name, description, priority) => {
+      addTask: (name, description, priority, dueDate, category) => {
         const newTask: Task = {
           id: uuid.v4(),
           name,
@@ -40,6 +44,8 @@ export const useTaskStore = create<TaskState>()(
           priority,
           completed: false,
           createdAt: new Date(),
+          dueDate,
+          category,
         };
         set({ tasks: [...get().tasks, newTask] });
       },

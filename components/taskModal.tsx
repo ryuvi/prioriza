@@ -1,12 +1,19 @@
 import { useModalStore } from "@/stores/useModalStore";
-import { useTaskStore, Task } from "@/stores/useTaskStore";
+import { useTaskStore } from "@/stores/useTaskStore";
 import React, { useState, useEffect } from "react";
-import { View } from "react-native";
+import { KeyboardAvoidingView, View } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
-import { Button, Modal, Portal, Text, TextInput, useTheme } from "react-native-paper";
+import {
+  Button,
+  Modal,
+  Portal,
+  Text,
+  TextInput,
+  useTheme,
+} from "react-native-paper";
 
 const TaskModal = () => {
-  const { visible, hideModal, editableTask } = useModalStore(); // Peguei editableTask direto aqui
+  const { visible, hideModal, editableTask } = useModalStore();
   const { colors } = useTheme();
   const { addTask, updateTask } = useTaskStore();
 
@@ -14,22 +21,28 @@ const TaskModal = () => {
     name: "",
     description: "",
     priority: 1,
+    dueDate: "", // novo campo
+    category: "",
   });
 
-  // Sincroniza o estado local com o editableTask sempre que o modal abrir ou editableTask mudar
+  // Sincroniza estado local com editableTask
   useEffect(() => {
     if (visible) {
       if (editableTask) {
         setTask({
           name: editableTask.name,
-          description: editableTask.description ?? '',
+          description: editableTask.description ?? "",
           priority: editableTask.priority ?? 1,
+          dueDate: editableTask.dueDate ?? "", // já seta o dueDate existente
+          category: editableTask.category ?? "",
         });
       } else {
         setTask({
           name: "",
           description: "",
           priority: 1,
+          dueDate: "",
+          category: "",
         });
       }
     }
@@ -37,7 +50,13 @@ const TaskModal = () => {
 
   const handleSave = () => {
     if (!task.name.trim()) return;
-    addTask(task.name.trim(), task.description.trim(), task.priority);
+    addTask(
+      task.name.trim(),
+      task.description.trim(),
+      task.priority,
+      task.dueDate.trim() || undefined, // repassa a dueDate para addTask, ou undefined se vazio
+      task.category.trim() || undefined
+    );
     hideModal();
   };
 
@@ -58,6 +77,7 @@ const TaskModal = () => {
           padding: 20,
           backgroundColor: colors.surface,
           borderRadius: 8,
+          zIndex: 2,
         }}
       >
         <Text variant="titleLarge" style={{ marginBottom: 24 }}>
@@ -78,7 +98,9 @@ const TaskModal = () => {
           multiline
           style={{ marginBottom: 16 }}
           value={task.description}
-          onChangeText={(description) => setTask((old) => ({ ...old, description }))}
+          onChangeText={(description) =>
+            setTask((old) => ({ ...old, description }))
+          }
         />
         <Text>Prioridade:</Text>
         <Dropdown
@@ -103,9 +125,33 @@ const TaskModal = () => {
             backgroundColor: colors.surfaceVariant,
             borderRadius: 8,
           }}
-          itemTextStyle={{ color: colors.onSurfaceVariant }}
-          activeColor={colors.secondary}
+          itemTextStyle={{ color: colors.onPrimaryContainer }}
+          activeColor={colors.primaryContainer}
         />
+
+        {/* Campo novo para dueDate */}
+        <TextInput
+          mode="outlined"
+          label="Data Limite (DD-MM-AAAA)"
+          style={{ marginBottom: 16 }}
+          value={task.dueDate}
+          onChangeText={(dueDate) => setTask((old) => ({ ...old, dueDate }))}
+          placeholder="Ex: 08-06-2025"
+          keyboardType="numeric"
+        />
+
+        
+        <TextInput
+          mode="outlined"
+          label="Categoria"
+          multiline
+          style={{ marginBottom: 16 }}
+          value={task.category}
+          onChangeText={(category) =>
+            setTask((old) => ({ ...old, category }))
+          }
+        />
+
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <Button mode="text" onPress={hideModal} textColor={colors.primary}>
             Cancelar

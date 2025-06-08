@@ -7,6 +7,8 @@ interface Task {
   priority?: number;
   completed: boolean;
   createdAt: Date;
+  dueDate?: string;
+  category?: string;
 }
 
 interface ModalState {
